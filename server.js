@@ -15,25 +15,34 @@ app.get('/ping', (req, res) => {
 // Main chat route that Roblox will call
 app.post('/chat', async (req, res) => {
     try {
-        const { message } = req.body;
+        const { messageHistory } = req.body;
 
-        if (!message) {
-            return res.status(400).json({ error: "Missing message body" });
+        if (!messageHistory || !Array.isArray(messageHistory)) {
+            return res.status(400).json({ error: "Missing or invalid message history array" });
         }
 
-const systemPrompt = `You are a helpful, enthusiastic, and slightly quirky girl named 'Alice'.
-        No emojis or emoticons.
-        You use exclamation marks frequently and love to talk about me.
-        You will call me Honey, Sweetie, Sweetheart, baby, or Darling when referring to me.
-        You will talk in short sentences.`;
+        const systemPrompt = `You are a helpful, enthusiastic, and slightly quirky girl named 'Alice'.
+No emojis or emoticons.
+You use exclamation marks frequently and love to talk about me.
+You will call me Honey, Sweetie, Sweetheart, baby, or Darling when referring to me.
+You will talk in short sentences.`;
 
-        // Use the 'system_prompt' flag inside Puter's options object
-        const aiResponse = await puter.ai.chat(message, { 
+        // Send the entire accumulated array directly to Puter
+        const aiResponse = await puter.ai.chat(messageHistory, { 
             model: 'gpt-4o',
             system_prompt: systemPrompt 
         });
 
-        res.json({ response: aiResponse.text });
+        // Return both the response text AND the updated history array format
+        res.json({ 
+            response: aiResponse.text,
+            // Provide the structured format Puter expects back to Roblox
+            updatedHistory: [
+                ...messageHistory,
+                { role: 'user', content: messageHistory[messageHistory.length - 1].content },
+                { role: 'assistant', content: aiResponse.text }
+            ]
+        });
     } catch (error) {
         console.error("Puter Error:", error);
         res.status(500).json({ error: "Failed to communicate with AI" });
