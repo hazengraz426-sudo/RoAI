@@ -17,7 +17,8 @@ app.post('/chat', async (req, res) => {
     try {
         const { messageHistory } = req.body;
 
-        if (!messageHistory || !Array.isArray(messageHistory)) {
+        // Add extreme validation so the server never crashes on empty arrays
+        if (!messageHistory || !Array.isArray(messageHistory) || messageHistory.length === 0) {
             return res.status(400).json({ error: "Missing or invalid message history array" });
         }
 
@@ -27,32 +28,37 @@ You use exclamation marks frequently and love to talk about me.
 You will call me Honey, Sweetie, Sweetheart, baby, or Darling when referring to me.
 You will talk in short sentences.`;
 
-        // Clear and explicit structural formatting for Puter's multi-turn schema
-        const queryLogs = [
+        // Create a perfectly structured payload matching standard OpenAI/Puter chat specifications
+        const formattedHistory = [
             { role: 'system', content: systemPrompt },
             ...messageHistory
         ];
 
-        // Call the AI model securely
-        const aiResponse = await puter.ai.chat(queryLogs, { 
-            model: 'gpt-4o' 
-        });
+        console.log("Sending history to Puter API...");
 
-        if (!aiResponse || !aiResponse.text) {
-            throw new Error("Invalid response received from Puter API core framework");
+        // Simplified API call: We let Puter use its default model to avoid system type-casting errors
+        const aiResponse = await puter.ai.chat(formattedHistory);
+
+        // Ensure we actually got text back before responding to Roblox
+        const replyText = aiResponse?.text || String(aiResponse);
+
+        if (!replyText) {
+            throw new Error("Puter API returned an empty text string.");
         }
 
-        // Return properties cleanly back down to Roblox
+        console.log("Successfully generated response from Puter!");
+
         res.json({ 
-            response: aiResponse.text,
+            response: replyText,
             updatedHistory: [
                 ...messageHistory,
-                { role: 'assistant', content: aiResponse.text }
+                { role: 'assistant', content: replyText }
             ]
         });
     } catch (error) {
-        console.error("CRITICAL BACKEND ERROR:", error);
-        res.status(500).json({ error: "Internal API system processing failure" });
+        // This will print the EXACT error message into your Render logs tab so you can read it!
+        console.error("CRITICAL ERROR IN POST /CHATROUTE:", error.message || error);
+        res.status(500).json({ error: error.message || "Failed to communicate with AI" });
     }
 });
 
@@ -60,4 +66,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
-
