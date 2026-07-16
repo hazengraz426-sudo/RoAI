@@ -1,15 +1,8 @@
 import express from 'express';
-import { init } from '@heyputer/puter.js'; // FIXED: Importing the explicit initializer
+import { puter } from '@heyputer/puter.js'; // Use standard implicit import
 import dotenv from 'dotenv';
 
 dotenv.config();
-
-// FIXED: Manually authorize Puter using your Render Environment Variable token
-const PUTER_TOKEN = process.env.PUTER_AUTH_TOKEN;
-if (!PUTER_TOKEN) {
-    console.error("WARNING: PUTER_AUTH_TOKEN is missing from your environment variables!");
-}
-const puter = init(PUTER_TOKEN); 
 
 const app = express();
 app.use(express.json());
@@ -42,7 +35,7 @@ You will talk in short sentences.`;
 
         console.log("Sending chat batch to Puter API...");
 
-        // Call the model via initialized pipeline instance
+        // Call the model via standard implicit auth instance
         const aiResponse = await puter.ai.chat(formattedHistory, { model: 'gpt-4o' });
 
         const replyText = aiResponse?.text || String(aiResponse);
