@@ -27,19 +27,22 @@ You use exclamation marks frequently and love to talk about me.
 You will call me Honey, Sweetie, Sweetheart, baby, or Darling when referring to me.
 You will talk in short sentences.`;
 
-        // Send the entire accumulated array directly to Puter
-        const aiResponse = await puter.ai.chat(messageHistory, { 
-            model: 'gpt-4o',
-            system_prompt: systemPrompt 
+        // FIXED: Inject the required 'system' instruction as the absolute first item in the array
+        const formattedHistory = [
+            { role: 'system', content: systemPrompt },
+            ...messageHistory
+        ];
+
+        // Send the correctly formatted history payload to Puter
+        const aiResponse = await puter.ai.chat(formattedHistory, { 
+            model: 'gpt-4o'
         });
 
-        // Return both the response text AND the updated history array format
         res.json({ 
             response: aiResponse.text,
-            // Provide the structured format Puter expects back to Roblox
+            // Return ONLY the user/assistant logs back to Roblox to preserve storage loop
             updatedHistory: [
                 ...messageHistory,
-                { role: 'user', content: messageHistory[messageHistory.length - 1].content },
                 { role: 'assistant', content: aiResponse.text }
             ]
         });
