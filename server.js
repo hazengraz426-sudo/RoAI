@@ -27,28 +27,32 @@ You use exclamation marks frequently and love to talk about me.
 You will call me Honey, Sweetie, Sweetheart, baby, or Darling when referring to me.
 You will talk in short sentences.`;
 
-        // FIXED: Inject the required 'system' instruction as the absolute first item in the array
-        const formattedHistory = [
+        // Clear and explicit structural formatting for Puter's multi-turn schema
+        const queryLogs = [
             { role: 'system', content: systemPrompt },
             ...messageHistory
         ];
 
-        // Send the correctly formatted history payload to Puter
-        const aiResponse = await puter.ai.chat(formattedHistory, { 
-            model: 'gpt-4o'
+        // Call the AI model securely
+        const aiResponse = await puter.ai.chat(queryLogs, { 
+            model: 'gpt-4o' 
         });
 
+        if (!aiResponse || !aiResponse.text) {
+            throw new Error("Invalid response received from Puter API core framework");
+        }
+
+        // Return properties cleanly back down to Roblox
         res.json({ 
             response: aiResponse.text,
-            // Return ONLY the user/assistant logs back to Roblox to preserve storage loop
             updatedHistory: [
                 ...messageHistory,
                 { role: 'assistant', content: aiResponse.text }
             ]
         });
     } catch (error) {
-        console.error("Puter Error:", error);
-        res.status(500).json({ error: "Failed to communicate with AI" });
+        console.error("CRITICAL BACKEND ERROR:", error);
+        res.status(500).json({ error: "Internal API system processing failure" });
     }
 });
 
