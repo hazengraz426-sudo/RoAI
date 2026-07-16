@@ -1,8 +1,19 @@
 import express from 'express';
-import { puter } from '@heyputer/puter.js'; // Use standard implicit import
+// FIXED: Explicitly pull the internal initialization path required by the Puter Node framework
+import { init } from "@heyputer/puter.js/src/init.cjs"; 
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+// Pull the token from your Render environment variable dashboard setup
+const PUTER_TOKEN = process.env.PUTER_AUTH_TOKEN;
+
+if (!PUTER_TOKEN) {
+    console.error("CRITICAL ERROR: PUTER_AUTH_TOKEN environment variable is not defined on the dashboard!");
+}
+
+// FIXED: Initialize Puter by passing the token string directly into the function parameter
+const puter = init(PUTER_TOKEN);
 
 const app = express();
 app.use(express.json());
@@ -27,15 +38,15 @@ You use exclamation marks frequently and love to talk about me.
 You will call me Honey, Sweetie, Sweetheart, baby, or Darling when referring to me.
 You will talk in short sentences.`;
 
-        // Inject system instructions as the very first element
+        // Combine the system instruction seamlessly with player logs
         const formattedHistory = [
             { role: 'system', content: systemPrompt },
             ...messageHistory
         ];
 
-        console.log("Sending chat batch to Puter API...");
+        console.log("Sending chat history batch directly to Puter...");
 
-        // Call the model via standard implicit auth instance
+        // Call the AI model through our authenticated puter variable sequence
         const aiResponse = await puter.ai.chat(formattedHistory, { model: 'gpt-4o' });
 
         const replyText = aiResponse?.text || String(aiResponse);
