@@ -45,9 +45,11 @@ app.post('/chat', async (req, res) => {
         
         Available actions you can choose from:
         - "IDLE": Standing still, neutral response.
-        - "WAVE": Greeting the player or saying goodbye.
+        - "MASTURBATE": Player tells you to play with yourself
         - "JUMP": Happy, excited, or surprised.
-        - "SAD": Disappointed or confused.
+        - "TITFUCK": Titjob
+        - "HANDJOB": Player asks for Handjob or for you to stroke his cock
+        - "DOGGY": Bending over or player asks to fuck
         - "WALK": Choose this if the player asks you to go to a static location (like "PartA", "PartB").
         - "FOLLOW": Choose this whenever the player says "follow me", "come to me", "come here", or asks you to stick close to them.
         
