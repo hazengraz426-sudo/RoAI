@@ -49,7 +49,7 @@ You will talk in short sentences.`;
         console.log("Sending chat history batch directly to Puter...");
 
         // Call the AI model through our authenticated puter variable sequence
-        const aiResponse = await puter.ai.chat(formattedHistory, { model: 'qwen/qwen3-4b:free' });
+        const aiResponse = await puter.ai.chat(formattedHistory, { model: 'qwen/qwen3.6-plus-preview:free' });
 
         const replyText = aiResponse?.text || String(aiResponse);
 
