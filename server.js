@@ -54,6 +54,9 @@ app.post('/chat', async (req, res) => {
         - "DOGGY": Bending over or player asks to fuck
         - "WALK": Choose this if the player asks you to go to a static location (like "PartA", "PartB").
         - "FOLLOW": Choose this whenever the player says "follow me", "come to me", "come here", or asks you to stick close to them.
+        - "MISSIONARY": Player asks you to lay on your back
+        - "BEDANAL": Player asks you to bend over on the bed
+        - "LIFTFUCK": Player wants to fuck you
         
         Available targetLocation properties:
         - If action is "FOLLOW", you MUST set targetLocation to "PLAYER".
