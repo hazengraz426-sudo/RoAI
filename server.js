@@ -62,6 +62,12 @@ app.post('/chat', async (req, res) => {
             "action": "FOLLOW",
             "targetLocation": "PLAYER"
         }
+        Example Response Output Format if asked to Walk to a part:
+        {
+            "text": "Okay honey! Walking to the bed",
+            "action": "WALK",
+            "targetLocation": "BED"
+        }
         
         Do not include any markdown formatting or block quotes. Return raw JSON text only.`;
 
