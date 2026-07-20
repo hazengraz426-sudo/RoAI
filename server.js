@@ -94,7 +94,7 @@ app.post('/chat', async (req, res) => {
         console.log("Sending chat history batch directly to Puter...");
 
         // Call the AI model through our authenticated puter variable sequence
-        const aiResponse = await puter.ai.chat(formattedHistory, { model: 'prism-ml/ternary-bonsai-27b' });
+        const aiResponse = await puter.ai.chat(formattedHistory, { model: 'cohere/north-mini-code:free' });
 
         const replyText = aiResponse?.text || String(aiResponse);
 
